@@ -14,6 +14,7 @@ class FightController(
     private val random = Random(System.currentTimeMillis())
 
     var onFightNextListener: OnFightNextListener? = null
+    var onFinishListener: OnFinishListener? = null
 
     override fun onStart() {
         // START
@@ -41,6 +42,12 @@ class FightController(
         }
 
         onFightNextListener?.onNext(data)
+
+        if (data.playersData.first.healthPoints < 0) {
+            onFinishListener?.onFinish(false)
+        } else if (data.playersData.second.healthPoints < 0) {
+            onFinishListener?.onFinish(true)
+        }
     }
 
     override fun onStop() {
@@ -49,6 +56,10 @@ class FightController(
 
     fun interface OnFightNextListener {
         fun onNext(model: FightModel)
+    }
+
+    fun interface OnFinishListener {
+        fun onFinish(win: Boolean)
     }
 
     companion object {
